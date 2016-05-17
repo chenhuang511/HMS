@@ -26,11 +26,11 @@ io.sockets.on('connection', function (socket) { // Listen action from client
 
 var net = require('net');
 
-var server = net.createServer(function(socket) {
-    socket.on("data",function (data) {
+var server = net.createServer(function(client) {
+    client.on("data",function (data) {
         console.log('received data: ' + data.toString());
     });
-    socket.on('end', function () {
+    client.on('end', function () {
         console.log('client disconnected');
     });
 });
