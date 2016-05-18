@@ -31,6 +31,9 @@ class Module
             array("name" => "Sửa", "key" => "update"),
             array("name" => "Xóa", "key" => "delete")
         ));
+        $permission["monitor"] = array("name" => "Monitor", "child" => array(
+            array("name" => "Xem danh sách", "key" => "view")
+        ));
         return $permission;
     }
 

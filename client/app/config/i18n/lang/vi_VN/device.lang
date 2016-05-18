@@ -1,0 +1,5 @@
+device.list = Danh sách thiết bị
+device.name = Tên thiết bị
+device.deviceid = Mã thiết bị
+device.sim = Số sim
+device.info = Thông tin thiết bị

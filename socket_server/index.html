@@ -5,14 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+<script src="http://localhost:2999/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-    var socket = io('http://localhost:3000');
-    socket.emit("alertfromdevice",{status:1});
-    socket.on('heartbeat', function(msg){
-        alert(msg);
-        //console.log(msg);
+    var socket = io('http://localhost:2999');
+    socket.on('respone_from_server', function(msg){
+        console.log(msg);
     });
 </script>
 </body>
