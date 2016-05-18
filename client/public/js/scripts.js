@@ -135,7 +135,7 @@
         zindex: '12000'
     });
 	*/
-    $(".notification-list-scroll").niceScroll({
+   /* $(".notification-list-scroll").niceScroll({
         styler: "fb",
         cursorcolor: "#DFDFE2",
         cursorwidth: '3',
@@ -143,7 +143,7 @@
 //        background: '#404040',
         cursorborder: '',
         zindex: '12000'
-    });
+    });*/
 
 
 
