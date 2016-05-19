@@ -155,7 +155,7 @@
                     }
                 },
                 title: {
-                    text: 'highpressure'
+                    text: 'Pressure'
                 },
                 xAxis: {
                     type: 'datetime',
@@ -186,6 +186,7 @@
                 },
                 series: [{
                     name: 'Hight',
+                    color:"#F70F0F",
                     data: (function () {
                         // generate an array of random data
                         var data = [],
@@ -203,6 +204,7 @@
                 },
                     {
                         name: 'Low',
+                        color:"#43CC63",
                         data: (function () {
                             // generate an array of random data
                             var data = [],
@@ -268,6 +270,7 @@
                 },
                 series: [{
                     name: 'Hight',
+                    color:"#F70F0F",
                     data: (function () {
                         // generate an array of random data
                         var data = [],
@@ -333,6 +336,7 @@
                 },
                 series: [{
                     name: 'Random data',
+                    color:"#F70F0F",
                     data: (function () {
                         // generate an array of random data
                         var data = [],
@@ -397,6 +401,7 @@
                 },
                 series: [{
                     name: 'Random data',
+                    color:"#165FFA",
                     data: (function () {
                         // generate an array of random data
                         var data = [],
