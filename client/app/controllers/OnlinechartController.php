@@ -14,7 +14,7 @@ class OnlinechartController extends ControllerBase
 
     }
     public function detailAction(){
-
-
+        $deviceid = $this->request->get("id","string");
+        $this->view->deviceid = $deviceid;
     }
 }

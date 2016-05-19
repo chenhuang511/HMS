@@ -1,3 +1,4 @@
+<a href="index">Back</a>
 <div class="panel">
     <div class="panel-heading">
         <h4>Temporary Statics</h4>
@@ -68,7 +69,7 @@
                     useUTC: false
                 }
             });
-            var socket = io('http://10.0.0.254:2999',{query:"device=D001"});
+            var socket = io('http://10.0.0.254:2999',{query:"device={{ deviceid }}"});
 
             $('#temporary_chart').highcharts({
                 chart: {

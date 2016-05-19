@@ -22,5 +22,13 @@ server.on('connection', function(client) {
             }
         });
     });
+
+    client.on('end',function(){
+        console.log("Reading end");
+    });
+
+    client.on('error', function(err){
+        console.log("Error: "+err.message);
+    })
 });
 
