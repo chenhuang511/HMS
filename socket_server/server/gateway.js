@@ -28,35 +28,34 @@ io.sockets.on('connection', function (socket) { // Listen action from client
 
 server.on('connection', function(client) { // Lắng nghe sự kiện từ các client kết nối
     client.on("data",function (data) { // Nếu client có gửi dữ liệu lên
-        rsmq.sendMessage({qname:"healthcare_gateway_queue", message: data.toString()}, function (err, resp) {  // Set dữ liệu vào queue và thông báo thành công
-            var str = data.toString();
-            var arr = str.split(",");
-            var deviceid = arr[0];
-            if(deviceid.length>0){
-                var type = arr[1];
-                if(type==null || type==undefined){}
-                else{
-                    if(type.toUpperCase()=="BP"){
-                        var highpressure = arr[2];
-                        var lowpressure = arr[3];
-                        var heartrate  = arr[4];
-                        console.log(heartrate);
-                        io.sockets.in(deviceid).emit("BP",{highpressure:highpressure,lowpressure:lowpressure,heartrate:heartrate});
-                    }
-                    else if(type.toUpperCase()=="TEMP"){
-                        var temp = arr[2];
-                        io.sockets.in(deviceid).emit("TEMP",temp);
-                    }
-                    else if(type.toUpperCase()=="SPO2"){
-                        var heartrate = arr[2];
-                        var oxygen = arr[3];
-                        io.sockets.in(deviceid).emit("SPO2",{heartrate:heartrate,oxygen:oxygen});
-                    }
-                    io.sockets.emit("monitor",str);
+        rsmq.sendMessage({qname:"healthcare_gateway_queue", message: data.toString()}, function (err, resp) { }); // Set dữ liệu vào queue
+        var str = data.toString();
+        var arr = str.split(",");
+        var deviceid = arr[0];
+        // Tính toán và push notify realtime về client
+        if(deviceid.length>0){
+            var type = arr[1];
+            if(type==null || type==undefined){}
+            else{
+                if(type.toUpperCase()=="BP"){
+                    var highpressure = arr[2];
+                    var lowpressure = arr[3];
+                    var heartrate  = arr[4];
+                    console.log(heartrate);
+                    io.sockets.in(deviceid).emit("BP",{highpressure:highpressure,lowpressure:lowpressure,heartrate:heartrate});
                 }
+                else if(type.toUpperCase()=="TEMP"){
+                    var temp = arr[2];
+                    io.sockets.in(deviceid).emit("TEMP",temp);
+                }
+                else if(type.toUpperCase()=="SPO2"){
+                    var heartrate = arr[2];
+                    var oxygen = arr[3];
+                    io.sockets.in(deviceid).emit("SPO2",{heartrate:heartrate,oxygen:oxygen});
+                }
+                io.sockets.emit("monitor",str);
             }
-
-        });
+        }
     });
 
     client.on('end',function(){ // Nếu client ngắt kết nối. thông báo ra console
