@@ -13,4 +13,8 @@ class OnlinechartController extends ControllerBase
 
 
     }
+    public function detailAction(){
+
+
+    }
 }
