@@ -18,8 +18,14 @@
 <script>
     $('#listdata').prepend("Gateway incoming connection !");
     var socket = io('http://10.0.0.254:2999');
-    socket.on('respone_from_server', function (msg) {
-        var utc = new Date().toJSON().slice(0,10);
-        $('#listdata').prepend("<p>Received "+utc+" > " + msg.message+"</p>");
+    socket.on('monitor', function (msg) {
+        var currentdate = new Date();
+        var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/"
+                + currentdate.getFullYear() + " "
+                + currentdate.getHours() + ":"
+                + currentdate.getMinutes() + ":"
+                + currentdate.getSeconds();
+        $('#listdata').prepend("<p>Received "+(datetime)+" > " + msg+"</p>");
     });
 </script>

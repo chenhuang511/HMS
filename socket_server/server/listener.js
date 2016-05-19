@@ -13,7 +13,7 @@ console.log("Socket listening on 2999"); // print welcome message
 io.sockets.on('connection', function (socket) { // Listen action from client
     var handshakeData = socket.request;
     var query = handshakeData._query;
-    socket.join(query.device);
+    if(query.device!=null && query.device != undefined) socket.join(query.device);
 });
 
 setInterval(function () {
@@ -43,6 +43,7 @@ setInterval(function () {
                         var oxygen = arr[3];
                         io.sockets.in(deviceid).emit("SPO2",{heartrate:heartrate,oxygen:oxygen});
                     }
+                    io.sockets.emit("monitor",res.message);
                 }
             }
 
