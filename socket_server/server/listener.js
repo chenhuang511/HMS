@@ -50,4 +50,4 @@ setInterval(function () {
         }
         
     });
-},1);
+},100);

@@ -1,5 +1,5 @@
 <style>
-    #listdata{background: #474747;color: #fff;max-height: 400px;overflow-y: auto}
+    #listdata{background: #474747;color: #fff;max-height: 600px;overflow-y: auto}
 </style>
 <div class="panel">
     <div class="panel-heading">
