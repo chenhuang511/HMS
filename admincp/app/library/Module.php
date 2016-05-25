@@ -37,6 +37,9 @@ class Module
         $permission["onlinechart"] = array("name" => "Online Chart", "child" => array(
             array("name" => "Xem danh sách", "key" => "view")
         ));
+        $permission["log"] = array("name" => "Log", "child" => array(
+            array("name" => "Xem danh sách", "key" => "view")
+        ));
         return $permission;
     }
 

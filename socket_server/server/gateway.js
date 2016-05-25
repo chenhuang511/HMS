@@ -13,49 +13,16 @@ rsmq.createQueue({qname:"healthcare_gateway_queue"}, function (err, resp) { // K
 });
 console.log("Gateway listening on 3000"); // Thông báo gateway khởi tạo thành công
 
-var io = require('socket.io')(2999); // import socket.io with listen port at 3000
-var redis = require('socket.io-redis'); // import socket.io-redis to save socket into redis server for Loadbalancing Request
-io.adapter(redis({ host: 'localhost', port: 6379 })); // Config socket.io connect to redis port
-console.log("Socket listening on 2999"); // print welcome message
-io.sockets.on('connection', function (socket) { // Listen action from client
-    var handshakeData = socket.request;
-    var query = handshakeData._query;
-    if(query.device!=null && query.device != undefined) socket.join(query.device);
-});
-
-
-
+var io = require('socket.io-client');
+var serverUrl = 'http://localhost:2999';
+var conn = io.connect(serverUrl);
 
 server.on('connection', function(client) { // Lắng nghe sự kiện từ các client kết nối
     client.on("data",function (data) { // Nếu client có gửi dữ liệu lên
-        rsmq.sendMessage({qname:"healthcare_gateway_queue", message: data.toString()}, function (err, resp) { }); // Set dữ liệu vào queue
         var str = data.toString();
-        var arr = str.split(",");
-        var deviceid = arr[0];
-        // Tính toán và push notify realtime về client
-        if(deviceid.length>0){
-            var type = arr[1];
-            if(type==null || type==undefined){}
-            else{
-                if(type.toUpperCase()=="BP"){
-                    var highpressure = arr[2];
-                    var lowpressure = arr[3];
-                    var heartrate  = arr[4];
-                    console.log(heartrate);
-                    io.sockets.in(deviceid).emit("BP",{highpressure:highpressure,lowpressure:lowpressure,heartrate:heartrate});
-                }
-                else if(type.toUpperCase()=="TEMP"){
-                    var temp = arr[2];
-                    io.sockets.in(deviceid).emit("TEMP",temp);
-                }
-                else if(type.toUpperCase()=="SPO2"){
-                    var heartrate = arr[2];
-                    var oxygen = arr[3];
-                    io.sockets.in(deviceid).emit("SPO2",{heartrate:heartrate,oxygen:oxygen});
-                }
-                io.sockets.emit("monitor",str);
-            }
-        }
+        str =getDateTime()+","+str;
+        rsmq.sendMessage({qname:"healthcare_gateway_queue", message: str}, function (err, resp) { }); // Set dữ liệu vào queue
+        conn.emit('gateway_send', str, function(resp, d) {});
     });
 
     client.on('end',function(){ // Nếu client ngắt kết nối. thông báo ra console
@@ -67,3 +34,18 @@ server.on('connection', function(client) { // Lắng nghe sự kiện từ các 
     })
 });
 
+function getDateTime() {
+    var date = new Date();
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+    return year + "\\" + month + "\\" + day + " " + hour + ":" + min + ":" + sec;
+}
