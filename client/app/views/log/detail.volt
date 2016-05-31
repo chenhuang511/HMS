@@ -22,6 +22,7 @@
 <script>
     $(function () {
         $(document).ready(function () {
+            var speed = 1000;
             Highcharts.setOptions({
                 global: {
                     useUTC: false
@@ -29,21 +30,21 @@
             });
             var hight = [
                 {% for index,item in bp %}
-                {% if index >3 %}
+                {% if index >15 %}
                 {x: getTime('{{ item[0] }}'), y:{{ item[1] }}},
                 {% endif %}
                 {% endfor %}
             ];
             var low = [
                 {% for index,item in bp %}
-                {% if index >3 %}
+                {% if index >15 %}
                 {x: getTime('{{ item[0] }}'), y:{{ item[2] }}},
                 {% endif %}
                 {% endfor %}
             ];
             var heartbeat_bp = [
                 {% for index,item in bp %}
-                {% if index >3 %}
+                {% if index >15 %}
                 {x: getTime('{{ item[0] }}'), y:{{ item[3] }}},
                 {% endif %}
                 {% endfor %}
@@ -69,7 +70,7 @@
                                     series_heartbeat.addPoint([heartbeat_bp[i].x, heartbeat_bp[i].y], true, true);
                                     ++i;
                                 }
-                            }, 1000);
+                            }, speed);
                         }
                     }
                 },
@@ -109,7 +110,7 @@
                         data: (function () {
                             var data = [];
                             {% for index,item in bp %}
-                            {% if index<=3 %}
+                            {% if index<=15 %}
                             data.push({
                                 x: getTime('{{ item['0'] }}'),
                                 y: {{ item['1'] }}
@@ -126,7 +127,7 @@
                             // generate an array of random data
                             var data = [];
                             {% for index,item in bp %}
-                            {% if index<=3 %}
+                            {% if index<=15 %}
                             data.push({
                                 x: getTime('{{ item['0'] }}'),
                                 y: {{ item['2'] }}
@@ -143,7 +144,7 @@
                             // generate an array of random data
                             var data = [];
                             {% for index,item in bp %}
-                            {% if index<=3 %}
+                            {% if index<=15 %}
                             data.push({
                                 x: getTime('{{ item['0'] }}'),
                                 y: {{ item['3'] }}
@@ -162,3 +163,4 @@
         }
     });
 </script>
+

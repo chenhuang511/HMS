@@ -7,7 +7,7 @@ class Module
     {
         $sidebar[] = array("name" => "Trang chủ", "icon" => "zmdi zmdi-home", "key" => "loginsystem", "controller" => "/index/index");
         $sidebar[] = array("name" => "Chart", "icon" => "zmdi zmdi-chart", "key" => "onlinechart", "controller" => "/onlinechart/index");
-        $sidebar[] = array("name" => "Log", "icon" => "zmdi zmdi-log", "key" => "log", "controller" => "/log/index");
+        $sidebar[] = array("name" => "Log", "icon" => "zmdi zmdi-chart", "key" => "log", "controller" => "/log/index");
         $sidebar[] = array("name" => "System Monitor", "icon" => "zmdi zmdi-code", "key" => "monitor", "controller" => "/monitor/index");
         return $sidebar;
     }

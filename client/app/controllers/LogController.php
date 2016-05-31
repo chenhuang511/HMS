@@ -29,14 +29,25 @@ class LogController extends ControllerBase
         
     }
     public function detailAction(){
-
-        $file = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\2016\\05\\23\\D001\\BP.txt";
+        $date = $this->request->get("date","string");
+        $starthour = $this->request->get("starthour","string");
+        $endhour = $this->request->get("endhour","string");
+        $device = $this->request->get("device","string");
+        $date_file = date("Y-m-d",strtotime("$date 00:00:00"));
+        $date_file = str_replace("-","\\",$date_file);
+        $file = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\{$date_file}\\{$device}\\BP.txt";
         $lines = file($file);
         $bp = array();
+        $mintime = strtotime("$date $starthour:00");
+        $maxtime = strtotime("$date $endhour:59");
         foreach ($lines as $line_num => $line) {
             list($datetime,$device,$type,$a,$b,$c) = explode(",",$line);
-            $datetime = str_replace("-","/",$datetime);
-            $bp[] = array($datetime,$a,$b,$c);
+            $time_convert = strtotime($datetime);
+            if($time_convert>=$mintime && $time_convert<=$maxtime){
+                $datetime = str_replace("-","/",$datetime);
+                $bp[] = array($datetime,$a,$b,$c);
+
+            }
         }
         //print_r($bp);die;
         $this->view->bp = $bp;
