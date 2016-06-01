@@ -36,10 +36,10 @@ function writefile(folderfile,filename,data) {
     var fullpath = folderfile+"\\"+filename;
     mkdirp(folderfile, function (err) {
         fs.exists(fullpath, function (exists) {
-            if(!exists) fs.writeFile(fullpath, data, function (err, data){});
+            if(!exists) fs.writeFile(fullpath, data+"\r\n", function (err, data){});
             else{
                 fs.open(fullpath, 'a', 666, function( e, id ) {
-                    fs.write( id, data, null, 'utf8', function(){
+                    fs.write( id, data+"\r\n", null, 'utf8', function(){
                         fs.close(id, function(){
                             console.log('Log > '+data+" has been writed");
                         });

@@ -6,6 +6,7 @@ class Module
     public static function Sidebar($langarr)
     {
         $sidebar[] = array("name" => "Trang chủ", "icon" => "zmdi zmdi-home", "key" => "loginsystem", "controller" => "/index/index");
+        $sidebar[] = array("name" => "Device", "icon" => "zmdi zmdi-phone", "key" => "device", "controller" => "/device/index");
         $sidebar[] = array("name" => "Chart", "icon" => "zmdi zmdi-chart", "key" => "onlinechart", "controller" => "/onlinechart/index");
         $sidebar[] = array("name" => "Log", "icon" => "zmdi zmdi-chart", "key" => "log", "controller" => "/log/index");
         $sidebar[] = array("name" => "System Monitor", "icon" => "zmdi zmdi-code", "key" => "monitor", "controller" => "/monitor/index");

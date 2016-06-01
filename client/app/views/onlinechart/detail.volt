@@ -1,7 +1,7 @@
 <a href="index">Back</a>
 <div class="panel">
     <div class="panel-heading">
-        <h4>Temporary Statics</h4>
+        <h4>Temporature Statics</h4>
     </div>
     <div class="panel-body">
         <div class="panel-body">
