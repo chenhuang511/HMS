@@ -1,14 +1,27 @@
 <a href="index">Back</a>
+
 <div class="panel">
     <div class="panel-heading">
-        <h4>Temporature Statics</h4>
+        <h4>GEO + Temporature</h4>
     </div>
     <div class="panel-body">
         <div class="panel-body">
-            <div id="real-time">
-                <div id="temporary_chart" class="f-c-space">
+            <div class="col-sm-6">
+                <style>
+                    #map {
+                        height: 400px;
+                    }
+                </style>
+
+                <div id="map"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="real-time">
+                    <div id="temporary_chart" class="f-c-space">
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -61,6 +74,20 @@
 <script src="http://10.0.0.254:2999/socket.io/socket.io.js"></script>
 
 <script>
+    var myLatLng = {lat: -25.363, lng: 131.044};
+    var marker = map = null;
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 13,
+            center: myLatLng
+        });
+
+        marker = new google.maps.Marker({
+            position: myLatLng,
+            map: map,
+            title: 'Hello World!'
+        });
+    }
 
     $(function () {
         $(document).ready(function () {
@@ -70,7 +97,10 @@
                 }
             });
             var socket = io('http://10.0.0.254:2999',{query:"device={{ deviceid }}"});
-
+            socket.on("POS", function (res) {
+                marker.setPosition(new google.maps.LatLng(res.la, res.lo));
+                map.setCenter(marker.getPosition());
+            });
             $('#temporary_chart').highcharts({
                 chart: {
                     type: 'spline',
@@ -420,4 +450,7 @@
             });
         });
     });
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZoB9-U5PQwS2we5vf_95S1McDaxNLSlE&callback=initMap">
 </script>

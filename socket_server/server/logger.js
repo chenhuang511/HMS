@@ -4,8 +4,6 @@ var rsmq = new RedisSMQ( {host: "127.0.0.1", port: 6379, ns: "rsmq"} );
 var mkdirp = require('mkdirp');
 var fs = require('fs');
 var log_dir = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
-
-
 setInterval(function () {
     rsmq.popMessage({qname:'healthcare_gateway_queue'},function (err,res) {
         if(res!=undefined && res.id != undefined){

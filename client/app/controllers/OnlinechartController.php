@@ -17,4 +17,5 @@ class OnlinechartController extends ControllerBase
         $deviceid = $this->request->get("id","string");
         $this->view->deviceid = $deviceid;
     }
+
 }

@@ -39,6 +39,11 @@ io.on('connection', function (socket) {
                     var oxygen = arr[4];
                     io.sockets.in(deviceid).emit("SPO2",{heartrate:heartrate,oxygen:oxygen});
                 }
+                else if(type.toUpperCase()=="POS"){
+                    var lat = arr[3];
+                    var lo = arr[4];
+                    io.sockets.in(deviceid).emit("POS",{la:lat,lo:lo});
+                }
             }
         }
 
