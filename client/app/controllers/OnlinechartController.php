@@ -130,4 +130,35 @@ class OnlinechartController extends ControllerBase
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $strdate);
         return strtotime($date->format("d-m-Y H:i:s"));
     }
+    private function syncBrowserDatetime($strdate){
+        $strdate = str_replace("T"," ",$strdate);
+        $date = DateTime::createFromFormat('Y-m-d H:i:s', $strdate);
+        return $date->format("Y-m-d")."T".$date->format("H:i:s");
+    }
+
+    public function deleteAction(){
+        $type = $this->request->get("type");
+        $deviceid = $this->request->get("deviceid");
+        switch ($type){
+            case 'temp':
+                $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
+                $date_file =str_replace("-","\\", date('Y-m-d'));
+                $file = "$logpath{$date_file}\\{$deviceid}\\TEMP.txt";
+                unlink($file);
+                break;
+            case 'spo2':
+                $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
+                $date_file =str_replace("-","\\", date('Y-m-d'));
+                $file = "$logpath{$date_file}\\{$deviceid}\\SPO2.txt";
+                unlink($file);
+                break;
+            case 'bp':
+                $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
+                $date_file =str_replace("-","\\", date('Y-m-d'));
+                $file = "$logpath{$date_file}\\{$deviceid}\\BP.txt";
+                unlink($file);
+                break;
+        }
+        $this->response->redirect("onlinechart/detail?id=$deviceid");
+    }
 }

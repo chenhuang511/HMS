@@ -8,7 +8,7 @@
     <meta name="keyword" content="slick, flat, dashboard, bootstrap, admin, template, theme, responsive, fluid, retina">
     <link rel="shortcut icon" href="javascript:;" type="image/png">
 
-    <title>WSI AdminCP</title>
+    <title>Health Care Management</title>
     <!--google fonts-->
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600,700&subset=latin,vietnamese' rel='stylesheet' type='text/css'/>
 

@@ -17,6 +17,7 @@ class ControllerBase extends Controller
     }
     public function initialize()
     {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
         $controller = strtolower($this->router->getControllerName());
         $action = $this->router->getActionName();
         $fullcontroleraction = strtolower($controller . "/" . $action);

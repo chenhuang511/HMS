@@ -1,0 +1,1 @@
+forever stop listener.js & forever stop gateway.js & forever stop logger.js

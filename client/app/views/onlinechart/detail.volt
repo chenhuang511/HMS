@@ -2,7 +2,7 @@
 
 <div class="panel">
     <div class="panel-heading">
-        <h4>GEO + Temporature</h4>
+        <h4>GEO + Temperature</h4>
     </div>
     <div class="panel-body">
         <div class="panel-body">
@@ -20,6 +20,7 @@
                     <div id="temporary_chart" class="f-c-space">
                     </div>
                 </div>
+                <a onclick="return confirm('Are you sure ?')" href="delete?type=temp&deviceid={{ deviceid }}" class="btn btn-danger">Reset</a>
             </div>
 
         </div>
@@ -43,6 +44,7 @@
                     </div>
                 </div>
             </div>
+            <a onclick="return confirm('Are you sure ?')" href="delete?type=bp&deviceid={{ deviceid }}" class="btn btn-danger">Reset</a>
         </div>
     </div>
 </div>
@@ -65,6 +67,7 @@
                     </div>
                 </div>
             </div>
+            <a onclick="return confirm('Are you sure ?')" href="delete?type=spo2&deviceid={{ deviceid }}" class="btn btn-danger">Reset</a>
         </div>
     </div>
 </div>
@@ -117,11 +120,18 @@
                 }
             },
             title: {
-                text: 'Temporature'
+                text: 'Temperature'
             },
             xAxis: {
                 type: 'datetime',
                 tickPixelInterval: 100,
+                dateTimeLabelFormats: { // don't display the dummy year
+                    month: '%e. %b',
+                    year: '%b'
+                },
+                title: {
+                    text: 'Date'
+                }
             },
             yAxis: {
                 title: {
@@ -135,8 +145,7 @@
             },
             tooltip: {
                 formatter: function () {
-                    return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                    return '<b>' + this.series.name + '</b><br/>' +  new Date(this.x)+ '<br/>'+
                             Highcharts.numberFormat(this.y, 2);
                 }
             },
@@ -147,13 +156,13 @@
                 enabled: false
             },
             series: [{
-                name: 'Random data',
+                name: 'Temperature Data',
                 data: (function () {
                     // generate an array of random data
                     var data = [];
                     {% for index,item in temp %}
                     data.push({
-                        x: new Date("{{ item["datestr"] }}"),
+                        x: new Date({{ item["dint"]*1000 }}),
                         y: {{ item["value"] }}
                     });
                     {% endfor %}
@@ -200,7 +209,7 @@
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            new Date(this.x) + '<br/>' +
                             Highcharts.numberFormat(this.y, 2);
                 }
             },
@@ -218,7 +227,7 @@
                     var data = [];
                     {% for index,item in bp %}
                     data.push({
-                        x: new Date("{{ item["datestr"] }}"),
+                        x: new Date({{ item["dint"]*1000 }}),
                         y: {{ item["value_hight"] }}
                     });
                     {% endfor %}
@@ -233,7 +242,7 @@
                         var data = [];
                         {% for index,item in bp %}
                         data.push({
-                            x: new Date("{{ item["datestr"] }}"),
+                            x: new Date({{ item["dint"]*1000 }}),
                             y: {{ item["value_low"] }}
                         });
                         {% endfor %}
@@ -278,7 +287,7 @@
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            new Date(this.x) + '<br/>' +
                             Highcharts.numberFormat(this.y, 2);
                 }
             },
@@ -296,7 +305,7 @@
                     var data = [];
                     {% for index,item in bp %}
                     data.push({
-                        x: new Date("{{ item["datestr"] }}"),
+                        x: new Date({{ item["dint"]*1000 }}),
                         y: {{ item["value_heart"] }}
                     });
                     {% endfor %}
@@ -380,7 +389,7 @@
                         // set up the updating of the chart each second
                         var series = this.series[0];
                         socket.on('SPO2', function (msg) {
-                            var x = Date.now(); // current time
+                            var x = new Date(); // current time
                             series.addPoint([x, parseInt(msg.oxygen)], true, true);
                         });
                     }
@@ -406,7 +415,7 @@
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            new Date(this.x) + '<br/>' +
                             Highcharts.numberFormat(this.y, 2);
                 }
             },
@@ -424,7 +433,7 @@
                     var data = [];
                     {% for index,item in oxygen %}
                     data.push({
-                        x: new Date("{{ item["datestr"] }}"),
+                        x: new Date({{ item["dint"]*1000 }}),
                         y: {{ item["value"] }}
                     });
                     {% endfor %}
