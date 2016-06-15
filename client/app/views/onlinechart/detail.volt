@@ -53,13 +53,13 @@
     </div>
     <div class="panel-body">
         <div class="panel-body">
-            <div class="col-sm-6">
+            {#<div class="col-sm-6">
                 <div id="real-time">
                     <div id="oxygen_heartrate_chart" class="f-c-space">
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-6">
+            </div>#}
+            <div class="col-sm-12">
                 <div id="real-time">
                     <div id="oxygen_oxy_chart" class="f-c-space">
                     </div>
@@ -74,380 +74,363 @@
 <script src="http://10.0.0.254:2999/socket.io/socket.io.js"></script>
 
 <script>
-    var myLatLng = {lat: -25.363, lng: 131.044};
+    var myLatLng = {lat: 21.030474, lng:105.782922};
     var marker = map = null;
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 13,
+            zoom: 15,
             center: myLatLng
         });
 
         marker = new google.maps.Marker({
             position: myLatLng,
             map: map,
-            title: 'Hello World!'
+            title: 'Your Position'
         });
     }
 
-    $(function () {
-        $(document).ready(function () {
-            Highcharts.setOptions({
-                global: {
-                    useUTC: false
+    $(document).ready(function () {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+        var socket = io('http://10.0.0.254:2999',{query:"device={{ deviceid }}"});
+        socket.on("POS", function (res) {
+            marker.setPosition(new google.maps.LatLng(res.la, res.lo));
+            map.setCenter(marker.getPosition());
+        });
+        $('#temporary_chart').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        socket.on('TEMP', function (msg) {
+                            var x = Date.now(); // current time
+                            series.addPoint([x, parseFloat(msg)], true, true);
+                        });
+                    }
                 }
-            });
-            var socket = io('http://10.0.0.254:2999',{query:"device={{ deviceid }}"});
-            socket.on("POS", function (res) {
-                marker.setPosition(new google.maps.LatLng(res.la, res.lo));
-                map.setCenter(marker.getPosition());
-            });
-            $('#temporary_chart').highcharts({
-                chart: {
-                    type: 'spline',
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            // set up the updating of the chart each second
-                            var series = this.series[0];
-                            socket.on('TEMP', function (msg) {
-                                var x = (new Date()).getTime(); // current time
-                                series.addPoint([x, parseInt(msg)], true, true);
-                            });
-                        }
-                    }
-                },
+            },
+            title: {
+                text: 'Temporature'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 100,
+            },
+            yAxis: {
                 title: {
-                    text: 'Temporary'
+                    text: 'Value'
                 },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                                Highcharts.numberFormat(this.y, 2);
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Random data',
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                                time = (new Date()).getTime(),
-                                i;
-
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: 0
-                            });
-                        }
-                        return data;
-                    }())
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
                 }]
-            });
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Random data',
+                data: (function () {
+                    // generate an array of random data
+                    var data = [];
+                    {% for index,item in temp %}
+                    data.push({
+                        x: new Date("{{ item["datestr"] }}"),
+                        y: {{ item["value"] }}
+                    });
+                    {% endfor %}
+                    return data;
+                }())
+            }]
+        });
 
-            $('#pressure_hight_chart').highcharts({
-                chart: {
-                    type: 'spline',
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            // set up the updating of the chart each second
-                            var series_hight = this.series[0];
-                            var series_low = this.series[1];
-                            socket.on('BP', function (msg) {
-                                var x = (new Date()).getTime(); // current time
-                                series_hight.addPoint([x, parseInt(msg.highpressure)], true, true);
-                                series_low.addPoint([x, parseInt(msg.lowpressure)], true, true);
-                            });
-                        }
+        $('#pressure_hight_chart').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series_hight = this.series[0];
+                        var series_low = this.series[1];
+                        socket.on('BP', function (msg) {
+                            var x = Date.now(); // current time
+                            series_hight.addPoint([x, parseInt(msg.highpressure)], true, true);
+                            series_low.addPoint([x, parseInt(msg.lowpressure)], true, true);
+                        });
                     }
-                },
+                }
+            },
+            title: {
+                text: 'Pressure'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
                 title: {
-                    text: 'Pressure'
+                    text: 'Value'
                 },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                                Highcharts.numberFormat(this.y, 2);
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Hight',
-                    color:"#F70F0F",
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                                time = (new Date()).getTime(),
-                                i;
-
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: 0
-                            });
-                        }
-                        return data;
-                    }())
-                },
-                    {
-                        name: 'Low',
-                        color:"#43CC63",
-                        data: (function () {
-                            // generate an array of random data
-                            var data = [],
-                                    time = (new Date()).getTime(),
-                                    i;
-
-                            for (i = -19; i <= 0; i += 1) {
-                                data.push({
-                                    x: time + i * 1000,
-                                    y: 0
-                                });
-                            }
-                            return data;
-                        }())
-                    }
-                ]
-            });
-            $('#pressure_heartbeat_chart').highcharts({
-                chart: {
-                    type: 'spline',
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            // set up the updating of the chart each second
-                            var series = this.series[0];
-                            socket.on('BP', function (msg) {
-                                var x = (new Date()).getTime(); // current time
-                                series.addPoint([x, parseInt(msg.heartrate)], true, true);
-                            });
-                        }
-                    }
-                },
-                title: {
-                    text: 'HeartBeat'
-                },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                                Highcharts.numberFormat(this.y, 2);
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Hight',
-                    color:"#F70F0F",
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                                time = (new Date()).getTime(),
-                                i;
-
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: 0
-                            });
-                        }
-                        return data;
-                    }())
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
                 }]
-            });
-
-            $('#oxygen_heartrate_chart').highcharts({
-                chart: {
-                    type: 'spline',
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            // set up the updating of the chart each second
-                            var series = this.series[0];
-                            socket.on('SPO2', function (msg) {
-                                var x = (new Date()).getTime(); // current time
-                                series.addPoint([x, parseInt(msg.heartrate)], true, true);
-                            });
-                        }
-                    }
-                },
-                title: {
-                    text: 'Heart Beat'
-                },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                                Highcharts.numberFormat(this.y, 2);
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Random data',
-                    color:"#F70F0F",
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Hight',
+                color:"#F70F0F",
+                data: (function () {
+                    // generate an array of random data
+                    var data = [];
+                    {% for index,item in bp %}
+                    data.push({
+                        x: new Date("{{ item["datestr"] }}"),
+                        y: {{ item["value_hight"] }}
+                    });
+                    {% endfor %}
+                    return data;
+                }())
+            },
+                {
+                    name: 'Low',
+                    color:"#43CC63",
                     data: (function () {
                         // generate an array of random data
-                        var data = [],
-                                time = (new Date()).getTime(),
-                                i;
-
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: 0
-                            });
-                        }
+                        var data = [];
+                        {% for index,item in bp %}
+                        data.push({
+                            x: new Date("{{ item["datestr"] }}"),
+                            y: {{ item["value_low"] }}
+                        });
+                        {% endfor %}
                         return data;
                     }())
-                }]
-            });
-            $('#oxygen_oxy_chart').highcharts({
-                chart: {
-                    type: 'spline',
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            // set up the updating of the chart each second
-                            var series = this.series[0];
-                            socket.on('SPO2', function (msg) {
-                                var x = (new Date()).getTime(); // current time
-                                series.addPoint([x, parseInt(msg.oxygen)], true, true);
-                            });
-                        }
+                }
+            ]
+        });
+        $('#pressure_heartbeat_chart').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        socket.on('BP', function (msg) {
+                            var x = Date.now(); // current time
+                            series.addPoint([x, parseInt(msg.heartrate)], true, true);
+                        });
                     }
-                },
+                }
+            },
+            title: {
+                text: 'HeartBeat'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
                 title: {
-                    text: 'Oxygen'
+                    text: 'Value'
                 },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                                Highcharts.numberFormat(this.y, 2);
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Random data',
-                    color:"#165FFA",
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                                time = (new Date()).getTime(),
-                                i;
-
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: 0
-                            });
-                        }
-                        return data;
-                    }())
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
                 }]
-            });
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Hight',
+                color:"#F70F0F",
+                data: (function () {
+                    // generate an array of random data
+                    var data = [];
+                    {% for index,item in bp %}
+                    data.push({
+                        x: new Date("{{ item["datestr"] }}"),
+                        y: {{ item["value_heart"] }}
+                    });
+                    {% endfor %}
+                    return data;
+                }())
+            }]
+        });
+
+       /* $('#oxygen_heartrate_chart').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        socket.on('SPO2', function (msg) {
+                            var x = (new Date()).getTime(); // current time
+                            series.addPoint([x, parseInt(msg.heartrate)], true, true);
+                        });
+                    }
+                }
+            },
+            title: {
+                text: 'Heart Beat'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Random data',
+                color:"#F70F0F",
+                data: (function () {
+                    // generate an array of random data
+                    var data = [],
+                            time = (new Date()).getTime(),
+                            i;
+
+                    for (i = -19; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: 0
+                        });
+                    }
+                    return data;
+                }())
+            }]
+        });*/
+        $('#oxygen_oxy_chart').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        socket.on('SPO2', function (msg) {
+                            var x = Date.now(); // current time
+                            series.addPoint([x, parseInt(msg.oxygen)], true, true);
+                        });
+                    }
+                }
+            },
+            title: {
+                text: 'Oxygen'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Oxygen Data',
+                color:"#165FFA",
+                data: (function () {
+                    // generate an array of random data
+                    var data = [];
+                    {% for index,item in oxygen %}
+                    data.push({
+                        x: new Date("{{ item["datestr"] }}"),
+                        y: {{ item["value"] }}
+                    });
+                    {% endfor %}
+                    return data;
+                }())
+            }]
         });
     });
 </script>

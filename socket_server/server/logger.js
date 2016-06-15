@@ -31,6 +31,7 @@ setInterval(function () {
     });
 },200);
 function writefile(folderfile,filename,data) {
+    data = data.replace("\r\n",'');
     var fullpath = folderfile+"\\"+filename;
     mkdirp(folderfile, function (err) {
         fs.exists(fullpath, function (exists) {

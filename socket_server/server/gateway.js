@@ -21,6 +21,7 @@ server.on('connection', function(client) { // Lắng nghe sự kiện từ các 
     client.on("data",function (data) { // Nếu client có gửi dữ liệu lên
         var str = data.toString();
         str =getDateTime()+","+str;
+        str = str.replace('\r\n','');
         rsmq.sendMessage({qname:"healthcare_gateway_queue", message: str}, function (err, resp) { }); // Set dữ liệu vào queue
         conn.emit('gateway_send', str, function(resp, d) {});
     });
