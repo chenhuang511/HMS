@@ -10,6 +10,7 @@
             <tr>
                 <th>#</th>
                 <th>Tên thiết bị</th>
+                <th>Thao tác</th>
             </tr>
             </thead>
             <tbody>
@@ -17,6 +18,7 @@
                 <tr>
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
+                    <td><a href="form?id={{ item.id }}">Sửa</a></td>
                 </tr>
             {% endfor %}
             </tbody>

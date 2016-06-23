@@ -11,7 +11,9 @@
                 </header>
                 <div class="panel-body">
                     <ul>
-                        <li><a href="detail?id=D001">D001</a></li>
+                        {% for item in listdevice %}
+                        <li><a href="detail?id={{ item.Device.deviceid }}">{{ item.name }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </section>

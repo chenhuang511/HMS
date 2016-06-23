@@ -8,6 +8,13 @@
  */
 class DeviceController extends ControllerBase
 {
+    public function initialize()
+    {
+        $this->modulename = "home";
+        $this->view->activesidebar = "/device/index";
+        parent::initialize();
+    }
+
     public function indexAction(){
         $uinfo = (object)$this->session->get("uinfo");
         $listdevice = UserDevice::find(array(
@@ -18,6 +25,7 @@ class DeviceController extends ControllerBase
     }
     public function formAction(){
         $uinfo = (object)$this->session->get("uinfo");
+        $id = $this->request->get("id","int");
         if($this->request->isPost()){
             $data = Helper::post_to_array("imei,simid,name");
             $o = Device::findFirst(array(
@@ -25,9 +33,14 @@ class DeviceController extends ControllerBase
                 "bind"=>array("dvid"=>$data['imei'],"sim"=>$data['simid'])
             ));
             if($o->id>0){
-                $udev =  new UserDevice();
+                if(!empty($id)){
+                    $udev = UserDevice::findFirst($id);
+                }
+                else{
+                    $udev =  new UserDevice();
+                    $udev->create_at = time();
+                }
                 $udev->device_id = $o->id;
-                $udev->create_at = time();
                 $udev->name = $data['name'];
                 $udev->user_id = $uinfo->id;
                 $udev->save();
@@ -36,6 +49,10 @@ class DeviceController extends ControllerBase
             else {
                 $this->flash->error("Không tìm thấy thiết bị tương ứng");
             }
+        }
+        if(!empty($id)){            
+            $object = UserDevice::findFirst($id);
+            $this->view->object = $object;
         }
     }
 }

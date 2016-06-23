@@ -8,15 +8,15 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="imei">Số IMEI</label>
-                        <div class="col-md-10"><input type="text" name="imei" value="" class="form-control" id="imei"></div>
+                        <div class="col-md-10"><input type="text" name="imei" value="{{ object.Device.deviceid }}" class="form-control" id="imei" ></div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="simid">Số SIM</label>
-                        <div class="col-md-10"><input type="text" name="simid" class="form-control" id="simid"></div>
+                        <div class="col-md-10"><input type="text" name="simid" value="{{ object.Device.sim }}" class="form-control" id="simid"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="name">Tên</label>
-                        <div class="col-md-10"><input type="text" name="name" class="form-control" id="name"></div>
+                        <div class="col-md-10"><input type="text" name="name" value="{{ object.name }}" class="form-control" id="name"></div>
                     </div>
                 </div>
             </section>

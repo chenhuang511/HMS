@@ -10,12 +10,31 @@ class OnlinechartController extends ControllerBase
     }
 
     public function indexAction(){
-
-
+        $uinfo = (object)$this->session->get("uinfo");
+        $uid = $uinfo->id;
+        $listdevice = UserDevice::find(array(
+            "conditions"=>"user_id = :userid:",
+            "bind"=>array("userid"=>$uid)
+        ));
+        $this->view->listdevice = $listdevice;
     }
     public function detailAction(){
         $deviceid = $this->request->get("id","string");
-        $this->view->deviceid = $deviceid;
+        $uinfo = (object)$this->session->get("uinfo");
+        $uid = $uinfo->id;
+        $deviceobject = Device::findFirst(array(
+           "conditions"=>"deviceid = :deviceid:",
+            "bind"=>array("deviceid"=>$deviceid)
+        ));
+        $obj = UserDevice::findFirst(array(
+            "conditions"=>"user_id = :userid: and device_id = :deviceid:",
+            "bind"=>array("userid"=>$uid,"deviceid"=>$deviceobject->id)
+        ));
+        if($obj->id<=0){
+            $this->response->redirect("index/index");
+            return false;
+        }
+        $this->view->deviceid = $deviceobject->deviceid;
 
         $this->view->temp = $this->loadOldTemp($deviceid);;
         $this->view->oxygen = $this->loadOldOxygen($deviceid);
