@@ -149,11 +149,6 @@ class OnlinechartController extends ControllerBase
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $strdate);
         return strtotime($date->format("d-m-Y H:i:s"));
     }
-    private function syncBrowserDatetime($strdate){
-        $strdate = str_replace("T"," ",$strdate);
-        $date = DateTime::createFromFormat('Y-m-d H:i:s', $strdate);
-        return $date->format("Y-m-d")."T".$date->format("H:i:s");
-    }
 
     public function deleteAction(){
         $type = $this->request->get("type");

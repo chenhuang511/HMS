@@ -11,7 +11,10 @@
                         <label class="col-md-2 control-label" for="date">Device</label>
                         <div class="col-md-10">
                             <select name="device" id="" class="form-control">
-                                <option value="D001">D001</option>
+                                {% for item in listdevice %}
+                                    <option value="{{ item.Device.deviceid }}">{{ item.name }}</option>
+                                {% endfor %}
+
                             </select>
                         </div>
                     </div>
