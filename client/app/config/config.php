@@ -23,10 +23,11 @@ return new \Phalcon\Config(array(
         'vendorDir'       => APP_PATH . '/app/vendor/',
         'cultureDir'       => APP_PATH . '/app/config/i18n/',
         'baseUri'        => '/',
-        'baseUrl' => 'http://localhost:6565/'
+        'baseUrl' => 'http://localhost:9874/'
     ),
+    "logpath"=>"D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\",
     "media"=>array(
         'dir'=>'D:\Project\Teca_pro\Healthcare\admincp\public\\',
-        "host"=>"http://localhost:6565/"
+        "host"=>"http://localhost:9874/"
     )
 ));

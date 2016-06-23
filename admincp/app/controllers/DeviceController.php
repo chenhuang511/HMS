@@ -75,6 +75,32 @@ class DeviceController extends ControllerBase
         $this->view->backurl = strlen($this->request->getHTTPReferer())<=0? $this->view->activesidebar: $this->request->getHTTPReferer();
     }
 
+    public function importAction(){
+        if ($this->request->isPost()) {
+            $fileexcel = $this->post_file_key("file", true);
+            require $this->config->application['vendorDir'] . 'excel/PHPExcel.php';
+            $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+            $objPHPExcel = $objReader->load($this->config->media->dir.$fileexcel);
+            $worksheet = $objPHPExcel->getActiveSheet();
+            $totalrow = $worksheet->getHighestRow();
+            try {
+                for ($i = 2; $i <= $totalrow; $i++) {
+                    $device = new Device();
+                    $device->deviceid = $worksheet->getCell("B$i")->getValue();
+                    $device->create_at = time();
+                    $device->sim = $worksheet->getCell("C$i")->getValue();
+                    $device->name = $worksheet->getCell("A$i")->getValue();
+                    $device->status = 1;
+                    $device->usercreate = $this->userinfo['id'];
+                    $device->save();
+                }
+                $this->flash->success($this->view->labelkey['general.lbl_process_success']);
+            } catch (Exception $e) {
+                $this->flash->error($e->getMessage());
+            }
+            unlink($fileexcel);
+        }
+    }
 
     public function deleteAction()
     {

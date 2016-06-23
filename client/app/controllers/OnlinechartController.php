@@ -41,7 +41,8 @@ class OnlinechartController extends ControllerBase
         $this->view->bp = $this->loadOldBp($deviceid);
     }
     private function loadOldTemp($deviceid){
-        $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
+        global $config;
+        $logpath = $config->logpath;
         $date_file =str_replace("-","\\", date('Y-m-d'));
         //Temp
         $file = "$logpath{$date_file}\\{$deviceid}\\TEMP.txt";
@@ -75,7 +76,8 @@ class OnlinechartController extends ControllerBase
         return $temp;
     }
     private function loadOldOxygen($deviceid){
-        $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
+        global $config;
+        $logpath = $config->logpath;
         $date_file =str_replace("-","\\", date('Y-m-d'));
         //Temp
         $file = "$logpath{$date_file}\\{$deviceid}\\SPO2.txt";
@@ -109,7 +111,8 @@ class OnlinechartController extends ControllerBase
         return $temp;
     }
     private function loadOldBp($deviceid){
-        $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
+        global $config;
+        $logpath = $config->logpath;
         $date_file =str_replace("-","\\", date('Y-m-d'));
         //Temp
         $file = "$logpath{$date_file}\\{$deviceid}\\BP.txt";
@@ -151,23 +154,22 @@ class OnlinechartController extends ControllerBase
     }
 
     public function deleteAction(){
+        global $config;
+        $logpath = $config->logpath;
         $type = $this->request->get("type");
         $deviceid = $this->request->get("deviceid");
         switch ($type){
             case 'temp':
-                $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
                 $date_file =str_replace("-","\\", date('Y-m-d'));
                 $file = "$logpath{$date_file}\\{$deviceid}\\TEMP.txt";
                 unlink($file);
                 break;
             case 'spo2':
-                $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
                 $date_file =str_replace("-","\\", date('Y-m-d'));
                 $file = "$logpath{$date_file}\\{$deviceid}\\SPO2.txt";
                 unlink($file);
                 break;
             case 'bp':
-                $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
                 $date_file =str_replace("-","\\", date('Y-m-d'));
                 $file = "$logpath{$date_file}\\{$deviceid}\\BP.txt";
                 unlink($file);

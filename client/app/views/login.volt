@@ -6,7 +6,7 @@
     <meta name="description" content="Admin Template">
     <meta name="keywords" content="admin dashboard, admin, flat, flat ui, ui kit, app, web app, responsive">
     <link rel="shortcut icon" href="img/ico/favicon.png">
-    <title>WSI Login</title>
+    <title>Health Care Login</title>
 
     <!-- Base Styles -->
     <link href="/css/style.css" rel="stylesheet">

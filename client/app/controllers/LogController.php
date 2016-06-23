@@ -8,7 +8,6 @@
  */
 class LogController extends ControllerBase
 {
-    public $logpath = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\";
     public function testAction(){
         $file = "D:\\Project\\Teca_pro\\Healthcare\\HMS\\socket_server\\server\\data\\2016\\05\\23\\D001\\BP.txt";
         $current = file_get_contents($file);
@@ -57,7 +56,8 @@ class LogController extends ControllerBase
     }
 
     private function getTemp(){
-        $logpath = $this->logpath;
+        global $config;
+        $logpath = $config->logpath;
         $date = $this->request->get("date","string");
         $starthour = $this->request->get("starthour","string");
         $endhour = $this->request->get("endhour","string");
@@ -80,7 +80,8 @@ class LogController extends ControllerBase
     }
 
     private function getBP(){
-        $logpath = $this->logpath;
+        global $config;
+        $logpath = $config->logpath;
         $date = $this->request->get("date","string");
         $starthour = $this->request->get("starthour","string");
         $endhour = $this->request->get("endhour","string");
@@ -103,7 +104,8 @@ class LogController extends ControllerBase
     }
 
     private function getSPO2(){
-        $logpath = $this->logpath;
+        global $config;
+        $logpath = $config->logpath;
         $date = $this->request->get("date","string");
         $starthour = $this->request->get("starthour","string");
         $endhour = $this->request->get("endhour","string");

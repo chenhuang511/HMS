@@ -54,7 +54,7 @@
                     }
                 },
                 title: {
-                    text: 'Oxygent'
+                    text: 'Oxygen'
                 },
                 xAxis: {
                     type: 'datetime',

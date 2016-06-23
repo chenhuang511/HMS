@@ -9,6 +9,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <a href="form" class="btn btn-success m-b-10">{{ labelkey['general.btn_addnew'] }}</a>
+                            <a href="import" class="btn btn-success m-b-10">Import</a>
                         </div>
                         <div class="col-md-6 text-right">
                             <input type="text" name="q" class="form-control" placeholder="{{ labelkey['general.lbl_search'] }}..." value="{{ q }}" />

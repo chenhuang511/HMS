@@ -46,7 +46,7 @@
         <div class="logo dark-logo-bg visible-xs-* visible-sm-*">
             <a href="/">
                 <!--<i class="fa fa-maxcdn"></i>-->
-                <span class="brand-name">WSI.vn</span>
+                <span class="brand-name">Health Care CMS</span>
             </a>
         </div>
         <!--responsive view logo end-->
@@ -104,7 +104,7 @@
             <div class="logo dark-logo-bg hidden-xs hidden-sm">
                 <a href="index.html">
                     <!--<i class="fa fa-maxcdn"></i>-->
-                    <span class="brand-name">WSI.vn</span>
+                    <span class="brand-name">Health Care CMS</span>
                 </a>
             </div>
 
