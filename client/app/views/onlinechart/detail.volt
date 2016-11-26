@@ -74,7 +74,7 @@
 
 <!--flot chart -->
 <script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="http://10.0.0.254:2999/socket.io/socket.io.js"></script>
+<script src="{{ config.socket_path }}/socket.io/socket.io.js"></script>
 
 <script>
     var myLatLng = {lat: 21.030474, lng:105.782922};
@@ -98,7 +98,7 @@
                 useUTC: false
             }
         });
-        var socket = io('http://10.0.0.254:2999',{query:"device={{ deviceid }}"});
+        var socket = io('{{ config.socket_path }}',{query:"device={{ deviceid }}"});
         socket.on("POS", function (res) {
             marker.setPosition(new google.maps.LatLng(res.la, res.lo));
             map.setCenter(marker.getPosition());
@@ -115,6 +115,7 @@
                         socket.on('TEMP', function (msg) {
                             var x = Date.now(); // current time
                             series.addPoint([x, parseFloat(msg)], true, true);
+                            console.log(parseFloat(msg));
                         });
                     }
                 }
@@ -389,7 +390,7 @@
                         // set up the updating of the chart each second
                         var series = this.series[0];
                         socket.on('SPO2', function (msg) {
-                            var x = new Date(); // current time
+                            var x = Date.now(); // current time
                             series.addPoint([x, parseInt(msg.oxygen)], true, true);
                         });
                     }

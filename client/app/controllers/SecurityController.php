@@ -14,7 +14,10 @@ class SecurityController extends ControllerBase {
         if($this->request->isPost()){
             $datapost = Helper::post_to_array("username,password");
             $datapost['password'] = Helper::encryptpassword($datapost['password']);
-            $o = User::findFirst("username = '{$datapost['username']}' and password = '{$datapost['password']}'");
+            $o = User::findFirst(array(
+                "conditions"=>"username = :u: and password = :p:",
+                "bind"=>array("u"=>$datapost['username'],"p"=>$datapost['password'])
+            ));
             if($o->id>0){
                 $o = $o->toArray();
                 // Check permission

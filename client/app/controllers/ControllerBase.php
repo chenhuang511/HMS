@@ -53,6 +53,7 @@ class ControllerBase extends Controller
         $this->view->currenturl = Helper::cpagerparm("lang");
         $this->view->media = $this->config->media;
         $this->view->application = $this->config->application;
+        $this->view->config = $this->config;
     }
 
     public function checksidebar($sidebaritem)

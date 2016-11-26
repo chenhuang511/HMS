@@ -50,87 +50,92 @@ class LogController extends ControllerBase
             $this->response->redirect("index/index");
             return false;
         }
-        $this->view->bp = $this->getBP();
-        $this->view->temp = $this->getTemp();
-        $this->view->spo2 = $this->getSPO2();
-    }
 
-    private function getTemp(){
-        global $config;
-        $logpath = $config->logpath;
         $date = $this->request->get("date","string");
         $starthour = $this->request->get("starthour","string");
         $endhour = $this->request->get("endhour","string");
         $device = $this->request->get("device","string");
-        $date_file = date("Y-m-d",strtotime("$date 00:00:00"));
-        $date_file = str_replace("-","\\",$date_file);
+        if(strlen($date)<=0) $date = date("d-m-Y");
+        if(strlen($starthour)<=0) $starthour = "00:00";
+        if(strlen($endhour)<=0) $endhour = "23:59";
+
+        $this->view->temp = self::getTemp($date,$starthour,$endhour,$device,1);
+        $this->view->bp = self::getBP($date,$starthour,$endhour,$device,1);
+        $this->view->spo2 = self::getSPO2($date,$starthour,$endhour,$device,1);
+    }
+
+    public static function getTemp($date,$starthour,$endhour,$device,$sortflag){
         $mintime = strtotime("$date $starthour:00");
         $maxtime = strtotime("$date $endhour:59");
+        $criterial= array(
+            "type" => "TEMP",
+            "datetime"=>array('$gte'=>$mintime,'$lte'=>$maxtime)
+        );
+        if(strlen($device)>0) $criterial["deviceid"] = $device;
+        $logs = LogCollection::find(
+            [
+                $criterial,
+                "sort"  => [
+                    "datetime" => $sortflag,
+                ]
+            ]
+        );
         // TEMP
-        $file = "$logpath{$date_file}\\{$device}\\TEMP.txt";
-        $lines = file($file);
         $temp = array();
-        foreach ($lines as $line_num => $line) {
-            list($datetime,$device,$type,$a) = explode(",",$line);
-            $datetime = str_replace(array("\\"," "),array("-","T"),$datetime);
-            $dint = $this->convertDateToInt($datetime);
-            if($dint>=$mintime && $dint<=$maxtime) $temp[] =  array("datestr"=>$datetime,"value"=>$a,"dint"=>$dint);
+        foreach ($logs as $line_num => $line) {
+            $temp[] =  array("value"=>$line->temp,"dint"=>$line->datetime);
         }
         return $temp;
     }
 
-    private function getBP(){
-        global $config;
-        $logpath = $config->logpath;
-        $date = $this->request->get("date","string");
-        $starthour = $this->request->get("starthour","string");
-        $endhour = $this->request->get("endhour","string");
-        $device = $this->request->get("device","string");
-        $date_file = date("Y-m-d",strtotime("$date 00:00:00"));
-        $date_file = str_replace("-","\\",$date_file);
+    public static function getBP($date,$starthour,$endhour,$device,$sortflag){
         $mintime = strtotime("$date $starthour:00");
         $maxtime = strtotime("$date $endhour:59");
-        // BP
-        $file = "$logpath{$date_file}\\{$device}\\BP.txt";
-        $lines = file($file);
+        $criterial= array(
+            "type" => "BP",
+            "datetime"=>array('$gte'=>$mintime,'$lte'=>$maxtime)
+        );
+        if(strlen($device)>0) $criterial["deviceid"] = $device;
+        $logs = LogCollection::find(
+            [
+                $criterial,
+                "sort"  => [
+                    "datetime" => $sortflag,
+                ]
+            ]
+        );
         $temp = array();
-        foreach ($lines as $line_num => $line) {
-            list($datetime,$device,$type,$a,$b,$c) = explode(",",$line);
-            $datetime = str_replace(array("\\"," "),array("-","T"),$datetime);
-            $dint = $this->convertDateToInt($datetime);
-            if($dint>=$mintime && $dint<=$maxtime)  $temp[] =  array("datestr"=>$datetime,"value_hight"=>$a,"value_low"=>$b,"value_heart"=>$c,"dint"=>$dint);
+        foreach ($logs as $line_num => $line) {
+            $datetime = str_replace(" ","T",date("d-m-Y H:i:s",$line->datetime));
+            $temp[] =  array("datestr"=>$datetime,"value_hight"=>$line->highpressure,"value_low"=>$line->lowpressure,"value_heart"=>$line->heartrate,"dint"=>$line->datetime);
         }
         return $temp;
     }
 
-    private function getSPO2(){
-        global $config;
-        $logpath = $config->logpath;
-        $date = $this->request->get("date","string");
-        $starthour = $this->request->get("starthour","string");
-        $endhour = $this->request->get("endhour","string");
-        $device = $this->request->get("device","string");
-        $date_file = date("Y-m-d",strtotime("$date 00:00:00"));
-        $date_file = str_replace("-","\\",$date_file);
+    public static function getSPO2($date,$starthour,$endhour,$device,$sortflag){
         $mintime = strtotime("$date $starthour:00");
         $maxtime = strtotime("$date $endhour:59");
+        $criterial= array(
+            "type" => "SPO2",
+            "datetime"=>array('$gte'=>$mintime,'$lte'=>$maxtime)
+        );
+        if(strlen($device)>0) $criterial["deviceid"] = $device;
+        $logs = LogCollection::find(
+            [
+                $criterial,
+                "sort"  => [
+                    "datetime" => $sortflag,
+                ]
+            ]
+        );
+
         // SPO2
-        $file = "$logpath{$date_file}\\{$device}\\SPO2.txt";
-        $lines = file($file);
         $temp = array();
-        foreach ($lines as $line_num => $line) {
-
-            list($datetime,$device,$type,$a,$b) = explode(",",$line);
-            $datetime = str_replace(array("\\"," "),array("-","T"),$datetime);
-            $dint = $this->convertDateToInt($datetime);
-            if($dint>=$mintime && $dint<=$maxtime)   $temp[] =  array("datestr"=>$datetime,"value"=>$b,"dint"=>$dint);
+        foreach ($logs as $line_num => $line) {
+            $datetime = str_replace(" ","T",date("d-m-Y H:i:s",$line->datetime));
+            $temp[] =  array("datestr"=>$datetime,"value"=>$line->oxygen,"dint"=>$line->datetime);
         }
         return $temp;
     }
 
-    private function convertDateToInt($strdate){
-        $strdate = str_replace("T"," ",$strdate);
-        $date = DateTime::createFromFormat('Y-m-d H:i:s', $strdate);
-        return strtotime($date->format("d-m-Y H:i:s"));
-    }
 }

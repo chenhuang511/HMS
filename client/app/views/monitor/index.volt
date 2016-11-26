@@ -13,11 +13,11 @@
     </div>
 
 </div>
-<script src="http://10.0.0.254:2999/socket.io/socket.io.js"></script>
+<script src="{{ config.socket_path }}/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
     $('#listdata').prepend("Gateway incoming connection !");
-    var socket = io('http://10.0.0.254:2999');
+    var socket = io('{{ config.socket_path }}');
     socket.on('monitor', function (msg) {
         var currentdate = new Date();
         var datetime = currentdate.getDate() + "/"

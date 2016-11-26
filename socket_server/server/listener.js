@@ -15,38 +15,16 @@ io.sockets.on('connection', function (socket) { // Listen action from client
 
 io.on('connection', function (socket) {
     socket.on('gateway_send', function (data, fn) {
-        var str = data.toString();
-        var arr = str.split(",");
-        var time = arr[0];
-        var deviceid = arr[1];
         // Tính toán và push notify realtime về client
-        if(deviceid.length>0){
-            var type = arr[2];
+        console.log(data);
+        if(data.deviceid.length>0){
+            var type = data.type;
             if(type==null || type==undefined){}
-            else{
-                if(type.toUpperCase()=="BP"){
-                    var highpressure = arr[3];
-                    var lowpressure = arr[4];
-                    var heartrate  = arr[5];
-                    io.sockets.in(deviceid).emit("BP",{highpressure:highpressure,lowpressure:lowpressure,heartrate:heartrate});
-                }
-                else if(type.toUpperCase()=="TEMP"){
-                    var temp = arr[3];
-                    io.sockets.in(deviceid).emit("TEMP",temp);
-                }
-                else if(type.toUpperCase()=="SPO2"){
-                    var heartrate = arr[3];
-                    var oxygen = arr[4];
-                    io.sockets.in(deviceid).emit("SPO2",{heartrate:heartrate,oxygen:oxygen});
-                }
-                else if(type.toUpperCase()=="POS"){
-                    var lat = arr[3];
-                    var lo = arr[4];
-                    io.sockets.in(deviceid).emit("POS",{la:lat,lo:lo});
-                }
-            }
+            else if(type.toUpperCase()=="BP") io.sockets.in(data.deviceid).emit("BP",{highpressure:data.highpressure,lowpressure:data.lowpressure,heartrate:data.heartrate});
+            else if(type.toUpperCase()=="TEMP") io.sockets.in(data.deviceid).emit("TEMP",data.temp);
+            else if(type.toUpperCase()=="SPO2") io.sockets.in(data.deviceid).emit("SPO2",{heartrate:data.heartrate,oxygen:data.oxygen});
+            else if(type.toUpperCase()=="POS") io.sockets.in(data.deviceid).emit("POS",{la:data.lat,lo:data.lo});
         }
-
-        io.sockets.emit("monitor",str);
+        io.sockets.emit("monitor",data);
     });
 });

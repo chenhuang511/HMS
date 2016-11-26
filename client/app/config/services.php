@@ -118,3 +118,16 @@ $di->setShared('session', function () {
 
     return $session;
 });
+
+$di->setShared('dbMongo', function () use ($config) {
+    $dbConfig = $config->databaseMongo;
+    $dbname = $dbConfig->dbname;
+    $host = $dbConfig->host;
+    $username = $dbConfig->username;
+    $password = $dbConfig->password;
+    $mongo = new MongoClient("mongodb://$username:$password@$host:27017");
+    return $mongo->selectDB($dbname);
+});
+$di->set('collectionManager', function () {
+    return new Phalcon\Mvc\Collection\Manager();
+});

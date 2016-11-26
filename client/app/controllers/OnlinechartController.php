@@ -41,23 +41,28 @@ class OnlinechartController extends ControllerBase
         $this->view->bp = $this->loadOldBp($deviceid);
     }
     private function loadOldTemp($deviceid){
-        global $config;
-        $logpath = $config->logpath;
-        $date_file =str_replace("-","\\", date('Y-m-d'));
-        //Temp
-        $file = "$logpath{$date_file}\\{$deviceid}\\TEMP.txt";
-        $lines = file($file);
-        $lines = array_slice(array_reverse($lines),0,15);
-        $lines = array_reverse($lines);
+        $logs = LogCollection::find(
+            [
+                [
+                    "type" => "TEMP",
+                    "deviceid"=>$deviceid
+                ],
+                "sort"  => [
+                    "datetime" => -1,
+                ],
+                "limit" => 15,
+            ]
+        );
         $temp = array();
         for($i=0;$i<15;$i++) {
             $dint = strtotime("-$i seconds");
             $temp[$i] = array("datestr"=>date("Y-m-d",$dint)."T".date("H:i:s",$dint),"value"=>0,"dint"=>$dint);
         }
-        foreach ($lines as $line_num => $line) {
-            list($datetime,$device,$type,$a) = explode(",",$line);
+        foreach ($logs as $line_num => $line) {
+            $datetime = date("Y-m-d H:i:s",$line->datetime);
+            $a = $line->temp;
             if(strlen($datetime)>2){
-                $datetime = str_replace(array("\\"," "),array("-","T"),$datetime);
+                $datetime = str_replace(" ","T",$datetime);
                 $dint = $this->convertDateToInt($datetime);
                 $temp[$line_num] =  array("datestr"=>$datetime,"value"=>$a,"dint"=>$dint);
             }
@@ -76,23 +81,29 @@ class OnlinechartController extends ControllerBase
         return $temp;
     }
     private function loadOldOxygen($deviceid){
-        global $config;
-        $logpath = $config->logpath;
-        $date_file =str_replace("-","\\", date('Y-m-d'));
-        //Temp
-        $file = "$logpath{$date_file}\\{$deviceid}\\SPO2.txt";
-        $lines = file($file);
-        $lines = array_slice(array_reverse($lines),0,15);
-        $lines = array_reverse($lines);
+        $logs = LogCollection::find(
+            [
+                [
+                    "type" => "SPO2",
+                    "deviceid"=>$deviceid
+                ],
+                "sort"  => [
+                    "datetime" => -1,
+                ],
+                "limit" => 15,
+            ]
+        );
         $temp = array();
         for($i=0;$i<15;$i++) {
             $dint = strtotime("-$i seconds");
             $temp[$i] = array("datestr"=>date("Y-m-d",$dint)."T".date("H:i:s",$dint),"value"=>0,"dint"=>$dint);
         }
-        foreach ($lines as $line_num => $line) {
-            list($datetime,$device,$type,$a,$b) = explode(",",$line);
+
+        foreach ($logs as $line_num => $line) {
+            $datetime = date("Y-m-d H:i:s",$line->datetime);
+            $b = $line->oxygen;
             if(strlen($datetime)>2){
-                $datetime = str_replace(array("\\"," "),array("-","T"),$datetime);
+                $datetime = str_replace(" ","T",$datetime);
                 $dint = $this->convertDateToInt($datetime);
                 $temp[$line_num] =  array("datestr"=>$datetime,"value"=>$b,"dint"=>$dint);
             }
@@ -111,23 +122,31 @@ class OnlinechartController extends ControllerBase
         return $temp;
     }
     private function loadOldBp($deviceid){
-        global $config;
-        $logpath = $config->logpath;
-        $date_file =str_replace("-","\\", date('Y-m-d'));
-        //Temp
-        $file = "$logpath{$date_file}\\{$deviceid}\\BP.txt";
-        $lines = file($file);
-        $lines = array_slice(array_reverse($lines),0,15);
-        $lines = array_reverse($lines);
+        $logs = LogCollection::find(
+            [
+                [
+                    "type" => "BP",
+                    "deviceid"=>$deviceid
+                ],
+                "sort"  => [
+                    "datetime" => -1,
+                ],
+                "limit" => 15,
+            ]
+        );
+
         $temp = array();
         for($i=0;$i<15;$i++) {
             $dint = strtotime("-$i seconds");
             $temp[$i] = array("datestr"=>date("Y-m-d",$dint)."T".date("H:i:s",$dint),"value_hight"=>0,"value_low"=>0,"value_heart"=>0,"dint"=>$dint);
         }
-        foreach ($lines as $line_num => $line) {
-            list($datetime,$device,$type,$a,$b,$c) = explode(",",$line);
+        foreach ($logs as $line_num => $line) {
+            $datetime = date("Y-m-d H:i:s",$line->datetime);
+            $a = $line->highpressure;
+            $b = $line->lowpressure;
+            $c = $line->heartrate;
             if(strlen($datetime)>2){
-                $datetime = str_replace(array("\\"," "),array("-","T"),$datetime);
+                $datetime = str_replace(" ","T",$datetime);
                 $dint = $this->convertDateToInt($datetime);
                 $temp[$line_num] =  array("datestr"=>$datetime,"value_hight"=>$a,"value_low"=>$b,"value_heart"=>$c,"dint"=>$dint);
             }
@@ -155,26 +174,32 @@ class OnlinechartController extends ControllerBase
 
     public function deleteAction(){
         global $config;
-        $logpath = $config->logpath;
         $type = $this->request->get("type");
         $deviceid = $this->request->get("deviceid");
         switch ($type){
             case 'temp':
-                $date_file =str_replace("-","\\", date('Y-m-d'));
-                $file = "$logpath{$date_file}\\{$deviceid}\\TEMP.txt";
-                unlink($file);
+                $type = "TEMP";
                 break;
             case 'spo2':
-                $date_file =str_replace("-","\\", date('Y-m-d'));
-                $file = "$logpath{$date_file}\\{$deviceid}\\SPO2.txt";
-                unlink($file);
+                $type = "SPO2";
                 break;
             case 'bp':
-                $date_file =str_replace("-","\\", date('Y-m-d'));
-                $file = "$logpath{$date_file}\\{$deviceid}\\BP.txt";
-                unlink($file);
+                $type = "BP";
                 break;
         }
+        $lists = LogCollection::find(
+            [
+                [
+                    "type" => "$type",
+                    "deviceid"=>$deviceid
+                ],
+                "sort"  => [
+                    "datetime" => -1,
+                ],
+                "limit" => 15,
+            ]
+        );
+        foreach($lists as $doc) $doc->delete();
         $this->response->redirect("onlinechart/detail?id=$deviceid");
     }
 }
