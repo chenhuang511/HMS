@@ -32,6 +32,7 @@ class ApiController extends \Phalcon\Mvc\Controller
             $object= $o->toArray();
             $object['token'] = $this->session->getId();
             $baseRS->data = $object;
+            $this->session->set("auth",$object);
         }
         else{
             $baseRS->status = 0;
@@ -41,6 +42,7 @@ class ApiController extends \Phalcon\Mvc\Controller
         return;
     }
     public function getlogAction(){
+        if(!$this->session->has("auth")) return;
         $baseRS = new BaseRespone(1,"Success",null);
         $date = $this->request->get("date","string");
         $starthour = $this->request->get("starthour","string");
@@ -51,9 +53,14 @@ class ApiController extends \Phalcon\Mvc\Controller
         if(strlen($date)<=0) $date = date("d-m-Y");
         if(strlen($starthour)<=0) $starthour = "00:00";
         if(strlen($endhour)<=0) $endhour = "23:59";
-        $data['temp'] = LogController::getTemp($date,$starthour,$endhour,$device,1);
-        $data['spo2'] = LogController::getSPO2($date,$starthour,$endhour,$device,1);
-        $data['bp'] = LogController::getBP($date,$starthour,$endhour,$device,1);
+        if($type=="temp") $data['temp'] = LogController::getTemp($date,$starthour,$endhour,$device,1);
+        else  if($type=="spo2") $data['spo2'] = LogController::getSPO2($date,$starthour,$endhour,$device,1);
+        else  if($type=="bp")  $data['bp']  = LogController::getBP($date,$starthour,$endhour,$device,1);
+        else{
+            $data['temp'] = LogController::getTemp($date,$starthour,$endhour,$device,1);
+            $data['spo2'] = LogController::getSPO2($date,$starthour,$endhour,$device,1);
+            $data['bp']  = LogController::getBP($date,$starthour,$endhour,$device,1);
+        }
         $baseRS->data = $data;
         echo json_encode($baseRS);
         return;
