@@ -34,8 +34,16 @@ class LogController extends ControllerBase
         ));
         $this->view->listdevice = $listdevice;
     }
+    public function fingersAction(){
+        $deviceid = $this->request->get("id","string");
+        $o = DeviceFinger::findFirst(array("deviceid"=>$deviceid));
+        header("Content-Type:application/json;charset=utf-8");
+        echo json_encode($o->toArray());
+        $this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_NO_RENDER);
+    }
     public function detailAction(){
         $deviceid = $this->request->get("device","string");
+        $fingerid = $this->request->get("fingerid","string");
         $uinfo = (object)$this->session->get("uinfo");
         $uid = $uinfo->id;
         $deviceobject = Device::findFirst(array(
@@ -59,12 +67,12 @@ class LogController extends ControllerBase
         if(strlen($starthour)<=0) $starthour = "00:00";
         if(strlen($endhour)<=0) $endhour = "23:59";
 
-        $this->view->temp = self::getTemp($date,$starthour,$endhour,$device,1);
-        $this->view->bp = self::getBP($date,$starthour,$endhour,$device,1);
-        $this->view->spo2 = self::getSPO2($date,$starthour,$endhour,$device,1);
+        $this->view->temp = self::getTemp($date,$starthour,$endhour,$device,$fingerid,1);
+        $this->view->bp = self::getBP($date,$starthour,$endhour,$device,$fingerid,1);
+        $this->view->spo2 = self::getSPO2($date,$starthour,$endhour,$device,$fingerid,1);
     }
 
-    public static function getTemp($date,$starthour,$endhour,$device,$sortflag){
+    public static function getTemp($date,$starthour,$endhour,$device,$fingerid,$sortflag){
         $mintime = strtotime("$date $starthour:00");
         $maxtime = strtotime("$date $endhour:59");
         $criterial= array(
@@ -72,6 +80,7 @@ class LogController extends ControllerBase
             "datetime"=>array('$gte'=>$mintime,'$lte'=>$maxtime)
         );
         if(strlen($device)>0) $criterial["deviceid"] = $device;
+        if(strlen($fingerid)>0) $criterial["fingerid"] = $fingerid;
         $logs = LogCollection::find(
             [
                 $criterial,
@@ -88,7 +97,7 @@ class LogController extends ControllerBase
         return $temp;
     }
 
-    public static function getBP($date,$starthour,$endhour,$device,$sortflag){
+    public static function getBP($date,$starthour,$endhour,$device,$fingerid,$sortflag){
         $mintime = strtotime("$date $starthour:00");
         $maxtime = strtotime("$date $endhour:59");
         $criterial= array(
@@ -96,6 +105,7 @@ class LogController extends ControllerBase
             "datetime"=>array('$gte'=>$mintime,'$lte'=>$maxtime)
         );
         if(strlen($device)>0) $criterial["deviceid"] = $device;
+        if(strlen($fingerid)>0) $criterial["fingerid"] = $fingerid;
         $logs = LogCollection::find(
             [
                 $criterial,
@@ -112,7 +122,7 @@ class LogController extends ControllerBase
         return $temp;
     }
 
-    public static function getSPO2($date,$starthour,$endhour,$device,$sortflag){
+    public static function getSPO2($date,$starthour,$endhour,$device,$fingerid,$sortflag){
         $mintime = strtotime("$date $starthour:00");
         $maxtime = strtotime("$date $endhour:59");
         $criterial= array(
@@ -120,6 +130,7 @@ class LogController extends ControllerBase
             "datetime"=>array('$gte'=>$mintime,'$lte'=>$maxtime)
         );
         if(strlen($device)>0) $criterial["deviceid"] = $device;
+        if(strlen($fingerid)>0) $criterial["fingerid"] = $fingerid;
         $logs = LogCollection::find(
             [
                 $criterial,

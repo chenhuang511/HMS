@@ -18,8 +18,13 @@ class OnlinechartController extends ControllerBase
         ));
         $this->view->listdevice = $listdevice;
     }
+    public function fingerAction(){
+        $deviceid = $this->request->get("id","string");
+        $this->view->object = DeviceFinger::findFirst(array("deviceid"=>$deviceid));
+    }
     public function detailAction(){
         $deviceid = $this->request->get("id","string");
+        $fingerid = $this->request->get("finger","string");
         $uinfo = (object)$this->session->get("uinfo");
         $uid = $uinfo->id;
         $deviceobject = Device::findFirst(array(
@@ -35,17 +40,20 @@ class OnlinechartController extends ControllerBase
             return false;
         }
         $this->view->deviceid = $deviceobject->deviceid;
+        $this->view->device = $deviceobject;
+        $this->view->fingerid = $fingerid;
 
-        $this->view->temp = $this->loadOldTemp($deviceid);;
-        $this->view->oxygen = $this->loadOldOxygen($deviceid);
-        $this->view->bp = $this->loadOldBp($deviceid);
+        $this->view->temp = $this->loadOldTemp($deviceid,$fingerid);;
+        $this->view->oxygen = $this->loadOldOxygen($deviceid,$fingerid);
+        $this->view->bp = $this->loadOldBp($deviceid,$fingerid);
     }
-    private function loadOldTemp($deviceid){
+    private function loadOldTemp($deviceid,$fingerid){
         $logs = LogCollection::find(
             [
                 [
                     "type" => "TEMP",
-                    "deviceid"=>$deviceid
+                    "deviceid"=>$deviceid,
+                    "fingerid"=>$fingerid
                 ],
                 "sort"  => [
                     "datetime" => -1,
@@ -64,7 +72,7 @@ class OnlinechartController extends ControllerBase
             if(strlen($datetime)>2){
                 $datetime = str_replace(" ","T",$datetime);
                 $dint = $this->convertDateToInt($datetime);
-                $temp[$line_num] =  array("datestr"=>$datetime,"value"=>$a,"dint"=>$dint);
+                $temp[$line_num] =  array("datestr"=>$datetime,"value"=>floatval($a),"dint"=>$dint);
             }
         }
         usort($temp, function($a, $b) {
@@ -80,12 +88,13 @@ class OnlinechartController extends ControllerBase
         }
         return $temp;
     }
-    private function loadOldOxygen($deviceid){
+    private function loadOldOxygen($deviceid,$fingerid){
         $logs = LogCollection::find(
             [
                 [
                     "type" => "SPO2",
-                    "deviceid"=>$deviceid
+                    "deviceid"=>$deviceid,
+                    "fingerid"=>$fingerid
                 ],
                 "sort"  => [
                     "datetime" => -1,
@@ -121,12 +130,13 @@ class OnlinechartController extends ControllerBase
         }
         return $temp;
     }
-    private function loadOldBp($deviceid){
+    private function loadOldBp($deviceid,$fingerid){
         $logs = LogCollection::find(
             [
                 [
                     "type" => "BP",
-                    "deviceid"=>$deviceid
+                    "deviceid"=>$deviceid,
+                    "fingerid"=>$fingerid
                 ],
                 "sort"  => [
                     "datetime" => -1,
@@ -176,6 +186,7 @@ class OnlinechartController extends ControllerBase
         global $config;
         $type = $this->request->get("type");
         $deviceid = $this->request->get("deviceid");
+        $fingerid = $this->request->get("fingerid");
         switch ($type){
             case 'temp':
                 $type = "TEMP";
@@ -191,7 +202,8 @@ class OnlinechartController extends ControllerBase
             [
                 [
                     "type" => "$type",
-                    "deviceid"=>$deviceid
+                    "deviceid"=>$deviceid,
+                    "fingerid"=>$fingerid
                 ],
                 "sort"  => [
                     "datetime" => -1,
@@ -200,6 +212,6 @@ class OnlinechartController extends ControllerBase
             ]
         );
         foreach($lists as $doc) $doc->delete();
-        $this->response->redirect("onlinechart/detail?id=$deviceid");
+        $this->response->redirect("onlinechart/detail?id=$deviceid&fingerid=$fingerid");
     }
 }

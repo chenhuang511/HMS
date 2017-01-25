@@ -7,12 +7,12 @@
         <div class="col-md-6">
             <section class="panel">
                 <header class="panel-heading">
-                    List Device
+                    List Finger ID
                 </header>
                 <div class="panel-body">
                     <ul>
-                        {% for item in listdevice %}
-                        <li><a href="finger?id={{ item.Device.deviceid }}">{{ item.name }}</a></li>
+                        {% for item in object.fingers %}
+                        <li><a href="detail?id={{ object.deviceid }}&finger={{ item }}">Finger: {{ item }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

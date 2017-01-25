@@ -1,5 +1,6 @@
 <a href="index">Back</a>
-
+<h4>Device ID: {{ device.name }}</h4>
+<h4>Finger ID: {{ fingerid }}</h4>
 <div class="panel">
     <div class="panel-heading">
         <h4>GEO + Temperature</h4>
@@ -20,7 +21,7 @@
                     <div id="temporary_chart" class="f-c-space">
                     </div>
                 </div>
-                <a onclick="return confirm('Are you sure ?')" href="delete?type=temp&deviceid={{ deviceid }}" class="btn btn-danger">Reset</a>
+                <a onclick="return confirm('Are you sure ?')" href="delete?type=temp&deviceid={{ deviceid }}&fingerid={{ fingerid }}" class="btn btn-danger">Reset</a>
             </div>
 
         </div>
@@ -44,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <a onclick="return confirm('Are you sure ?')" href="delete?type=bp&deviceid={{ deviceid }}" class="btn btn-danger">Reset</a>
+            <a onclick="return confirm('Are you sure ?')" href="delete?type=bp&deviceid={{ deviceid }}&fingerid={{ fingerid }}" class="btn btn-danger">Reset</a>
         </div>
     </div>
 </div>
@@ -67,7 +68,7 @@
                     </div>
                 </div>
             </div>
-            <a onclick="return confirm('Are you sure ?')" href="delete?type=spo2&deviceid={{ deviceid }}" class="btn btn-danger">Reset</a>
+            <a onclick="return confirm('Are you sure ?')" href="delete?type=spo2&deviceid={{ deviceid }}&fingerid={{ fingerid }}" class="btn btn-danger">Reset</a>
         </div>
     </div>
 </div>
